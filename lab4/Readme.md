@@ -1,4 +1,4 @@
-# Лабораторная работа №3
+# Лабораторная работа №4
 
 <div align="center">
 
@@ -18,8 +18,8 @@
 <br>
 <br>
 
-Лабораторная работа №3 
-**«Реализация списка объектов с фильтрацией с использованием .map, .filter, .sortedBy»**  
+Лабораторная работа №4
+**«Верстка экрана профиля пользователя (аватар, имя, кнопка «Редактировать»)»**  
 01.03.02 Прикладная математика и информатика  
 3 Курс
 
@@ -55,195 +55,216 @@
 
 ## Цель Работы
 
-Изучить функциональные методы обработки коллекций в Kotlin (filter, map, sortedBy) на примере списка объектов и вывести результаты в интерфейс Android-приложения.
+Освоить создание пользовательского интерфейса в Android с использованием ConstraintLayout, изучить основные компоненты: ImageView, TextView, Button. Научиться работать с ресурсами (строки, цвета, размеры) и обрабатывать нажатия кнопок.
 
-## Product
+## activity_main.xml
 ```kotlin
 
-package com.example.lab3.models
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_light"
+    tools:context=".MainActivity">
 
-data class Product(
-    val name: String,
-    val category: String,
-    val price: Double,
-    val inStock: Boolean
-)
+    <ImageView
+        android:id="@+id/imageAvatar"
+        android:layout_width="@dimen/avatar_size"
+        android:layout_height="@dimen/avatar_size"
+        android:src="@drawable/ic_profile"
+        android:contentDescription="@string/profile_name"
+        android:scaleType="centerInside"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/margin_normal" />
+
+    <TextView
+        android:id="@+id/textName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/profile_name"
+        android:textSize="@dimen/text_size_name"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/imageAvatar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/margin_small" />
+
+    <TextView
+        android:id="@+id/textStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/profile_status"
+        android:textSize="@dimen/text_size_status"
+        android:textColor="@color/purple_500"
+        app:layout_constraintTop_toBottomOf="@id/textName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/margin_small" />
+
+    <LinearLayout
+        android:id="@+id/layoutContacts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/margin_normal"
+        app:layout_constraintTop_toBottomOf="@id/textStatus"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginEnd="@dimen/margin_normal">
+
+            <ImageView
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
+                android:src="@drawable/ic_phone"
+                android:contentDescription="Phone"
+                android:layout_marginEnd="@dimen/margin_small"
+                app:tint="@color/purple_500" />
+
+            <TextView
+                android:id="@+id/textPhone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/contact_phone"
+                android:textSize="@dimen/text_size_contact"
+                android:textColor="@color/black" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
+                android:src="@drawable/ic_email"
+                android:contentDescription="Email"
+                android:layout_marginEnd="@dimen/margin_small"
+                app:tint="@color/purple_500" />
+
+            <TextView
+                android:id="@+id/textEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/contact_email"
+                android:textSize="@dimen/text_size_contact"
+                android:textColor="@color/black" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/buttonEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_edit"
+        android:backgroundTint="@color/purple_200"
+        app:cornerRadius="@dimen/button_corner_radius"
+        app:layout_constraintTop_toBottomOf="@id/layoutContacts"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/margin_normal"/>
+
+    <Button
+        android:id="@+id/buttonBack"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_back"
+        android:textColor="@color/purple_500"
+        app:layout_constraintTop_toBottomOf="@id/buttonEdit"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/margin_small"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 ```
-## MainActivity
+## MainActivity.kt
 ```kotlin
-package com.example.lab3
+package com.example.profileapp
 
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TextView
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.lab3.models.Movie
-import com.example.lab3.models.Product
-import com.example.lab3.ui.theme.Lab3Theme
+import android.widget.Button
+import android.widget.Toast
 
-class MainActivity : ComponentActivity() {
-    private fun getProducts(): List<Product> {
-        return listOf(
-            Product("Ноутбук", "Электроника", 75000.0, true),
-            Product("Мышь", "Электроника", 1500.0, true),
-            Product("Книга 'Котлин'", "Книги", 1200.0, false),
-            Product("Флешка 64GB", "Электроника", 2000.0, true),
-            Product("Блокнот", "Канцелярия", 300.0, true),
-            Product("Ручка", "Канцелярия", 50.0, false),
-            Product("Монитор", "Электроника", 25000.0, true)
-        )
-    }
-
-    private fun getMovies(): List<Movie> {
-        return listOf(
-            Movie("Побег из Шоушенка", "Драма", 9.3, 1994),
-            Movie("Крёстный отец", "Драма", 9.2, 1972),
-            Movie("Тёмный рыцарь", "Боевик", 9.0, 2008),
-            Movie("Начало", "Фантастика", 8.8, 2010),
-            Movie("Интерстеллар", "Фантастика", 8.6, 2014),
-            Movie("Форрест Гамп", "Драма", 8.8, 1994),
-            Movie("Матрица", "Фантастика", 8.7, 1999),
-            Movie("Бойцовский клуб", "Драма", 8.8, 1999),
-            Movie("Джокер", "Драма", 8.4, 2019),
-            Movie("Мстители: Финал", "Боевик", 8.4, 2019),
-            Movie("Сияние", "Ужасы", 8.4, 1980),
-            Movie("Титаник", "Драма", 7.9, 1997)  // рейтинг < 8.0, не попадёт в фильтр
-        )
-    }
+class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val products = getProducts()
-
-        // Исходный список
-        val originalText = products.joinToString("\n") {
-            "${it.name} – ${it.price} руб. (${if (it.inStock) "в наличии" else "нет"})"
+        val buttonEdit = findViewById<Button>(R.id.buttonEdit)
+        buttonEdit.setOnClickListener {
+            Toast.makeText(this, R.string.toast_message, Toast.LENGTH_SHORT).show()
         }
-        findViewById<TextView>(R.id.textOriginal).text = originalText
 
-        // Фильтр: только в наличии
-        val inStockProducts = products.filter { it.inStock }
-        val inStockText = inStockProducts.joinToString("\n") {
-            "${it.name} – ${it.price} руб."
+        val buttonBack = findViewById<Button>(R.id.buttonBack)
+        buttonBack.setOnClickListener {
+            Toast.makeText(this, R.string.toast_back, Toast.LENGTH_SHORT).show()
         }
-        findViewById<TextView>(R.id.textInStock).text = inStockText
-
-        //  Цепочка: Электроника + в наличии → сортировка по цене → форматирование
-        val electronicsSorted = products
-            .filter { it.category == "Электроника" && it.inStock }  // фильтрация
-            .sortedBy { it.price }                                   // сортировка по возрастанию
-            .map { "${it.name} – ${it.price} руб." }                 // преобразование в строку
-
-        findViewById<TextView>(R.id.textSorted).text = electronicsSorted.joinToString("\n")
-
-        // Товары дешевле 2000 руб, отсортированные по названию
-        val cheapProducts = products
-            .filter { it.price < 2000 && it.inStock }
-            .sortedBy { it.name }
-            .map { "${it.name}: ${it.price} руб." }
-
-        findViewById<TextView>(R.id.textCheap).text = cheapProducts.joinToString("\n")
-
-        val movies = getMovies()
-
-        val topMovies = movies
-            .filter { it.rating > 8.0 }                    // фильтрация по рейтингу
-            .sortedBy { it.year }                          // сортировка по году (старые → новые)
-            .map { "${it.title} (${it.year}) — ${it.rating}" } // форматирование
-
-        findViewById<TextView>(R.id.textMovies).text = topMovies.joinToString("\n")
     }
 }
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Lab3Theme {
-        Greeting("Android")
-    }
-}
-
 ```
 
-## Индивидуальное задание: Класс "Студент"
-Список фильмов (название, жанр, рейтинг, год выпуска).
+## Индивидуальное задание: Профиль с контактами
+Добавьте под статусом информацию о телефоне и email (два TextView с иконками). Используйте LinearLayout горизонтальный внутри ConstraintLayout.
 
-Показать фильмы с рейтингом выше 8.0.
-Отсортировать их по году выпуска.
-Вывести список названий и рейтингов.
+<img width="322" height="717" alt="image" src="https://github.com/user-attachments/assets/919e8548-f4ed-49ad-8cb3-718dc14faf58" />
 
-<img width="383" height="855" alt="image" src="https://github.com/user-attachments/assets/fda38056-93f3-44b5-b853-bdc809b024c5" />
 
 
 ## Ответы на контрольные вопросы
-**Что возвращает filter?**
+1. ConstraintLayout используется для гибкого позиционирования элементов интерфейса относительно друг друга или границ родительского контейнера. Преимущества перед LinearLayout: плоская иерархия виджетов (отсутствует глубокая вложенность), высокая производительность рендеринга, возможность задавать сложные связи, пропорции и смещения без использования дополнительных ViewGroup.
 
-- Новый список, исходный не изменяется (принцип неизменяемости).
+2. Атрибуты `app:layout_constraint...` задают ограничения (привязки) конкретных сторон виджета к сторонам родительского контейнера или к идентификаторам других виджетов, определяя точное положение и поведение элемента при изменении размеров экрана.
 
-**Разница sortedBy и sortedByDescending?**
+3. Размеры выносятся в файл `res/values/dimens.xml`, цвета — в `res/values/colors.xml`. Это необходимо для централизованного управления стилями, повторного использования значений, упрощения поддержки кода, быстрой смены тем и адаптации под разные плотности экранов.
 
-- Первый сортирует по возрастанию, второй — по убыванию.
+4. Обработчик клика добавляется методом `setOnClickListener`, передавая ему лямбда-выражение или объект `View.OnClickListener`: `button.setOnClickListener { /* действия */ }`.
 
-**Как объединить условия в filter?**
-
-- Через && (И) или || (ИЛИ):
-- filter { it.price > 100 && it.inStock }
-
-**Для чего map? Пример:**
-
-- Преобразует элементы коллекции:
-- products.map { it.name } → список только с названиями.
-
-**Что такое joinToString?**
-
-- Функция, которая объединяет элементы коллекции в одну строку с разделителем:
-- listOf("A", "B").joinToString(" | ") → "A | B"
+5. Обработчик добавляется аналогично: `imageView.setOnClickListener { /* действия */ }`. В XML-разметке к элементу `ImageView` обязательно нужно добавить атрибуты `android:clickable="true"` и `android:focusable="true"`.
 
 ## Вывод
 
-В результате выполнения лабораторной работы было разработано Android-приложение для демонстрации функциональной обработки списков объектов с использованием встроенных методов Kotlin.
+В результате выполнения лабораторной работы было разработано Android-приложение с экраном профиля пользователя, содержащим аватар, имя, статус, контактные данные и интерактивные кнопки управления.
 
 **Изученные и применённые технологии:**
-- **Data class:** реализована модель `Movie` для хранения данных о фильме (название, жанр, рейтинг, год выпуска).
-- **Функциональные методы коллекций:** применены `.filter`, `.sortedBy` и `.map` для выборки, сортировки и преобразования данных.
-- **Цепочки вызовов (Chaining):** настроена последовательная обработка данных без создания лишних промежуточных переменных.
-- **Лямбда-выражения:** использованы анонимные функции для передачи условий фильтрации и правил сортировки (в т.ч. с неявным параметром `it`).
-- **Форматирование вывода:** применён метод `.joinToString()` для преобразования коллекции строк в единый текстовый блок с переносами.
+- **ConstraintLayout:** использован как корневой контейнер для создания плоской иерархии интерфейса и гибкого позиционирования элементов относительно друг друга.
+- **Система ресурсов Android:** текстовые строки вынесены в `strings.xml`, цветовая палитра — в `colors.xml`, размеры и отступы — в `dimens.xml`.
+- **Базовые View-компоненты:** реализованы `ImageView` для отображения аватара, `TextView` для текстовой информации и `Button` для выполнения действий.
+- **Kotlin и Android SDK:** применены `findViewById` для связывания кода с XML-разметкой и `setOnClickListener` для обработки пользовательских взаимодействий.
 
-**Обработка коллекций и логика:**
-- Реализована фильтрация списка по условию `rating > 8.0`, корректно исключающая фильмы с низким рейтингом.
-- Выполнена сортировка отфильтрованной выборки по году выпуска в порядке возрастания.
-- Осуществлено преобразование объектов `Movie` в человекочитаемые строки с указанием названия и рейтинга.
-- Продемонстрирован принцип иммутабельности: исходный список не изменяется, каждая операция возвращает новую коллекцию.
+**Верстка и архитектура интерфейса:**
+- Настроены привязки (`app:layout_constraint...`) для всех виджетов, обеспечивающие корректное центрирование и адаптивность на разных размерах экранов.
+- Реализована вертикальная структура макета: аватар → имя → статус → контакты → кнопки действий.
+- Обеспечена поддерживаемость кода за счёт отказа от хардкода и централизованного управления стилями через ресурсные файлы.
+- Добавлена обработка нажатий, вызывающая системные уведомления (`Toast`) для обратной связи с пользователем.
 
-**Индивидуальное задание («Список фильмов»):**
-- Создан тестовый набор данных из 12 фильмов различных жанров и годов выпуска.
-- Настроена цепочка обработки: `filter { it.rating > 8.0 } → sortedBy { it.year } → map { ... }`.
-- Реализован вывод отфильтрованных и отсортированных данных в интерфейс приложения.
-- Проверена корректность работы при модификации условий (например, добавление фильтра по жанру или использование `sortedByDescending`).
+**Индивидуальное задание («Профиль с контактами»):**
+- Под статусом профиля размещён горизонтальный `LinearLayout`, содержащий информацию о номере телефона и электронной почте.
+- Для каждого контакта добавлены векторные иконки (`ic_phone`, `ic_email`) и текстовые метки с выравниванием по вертикальному центру.
+- Реализована визуальная группировка данных с использованием вложенных контейнеров и атрибутов `gravity`/`orientation`.
+- Проверено корректное отображение контактов при изменении параметров экрана и масштабировании шрифтов.
 
 **Интерфейс и запуск:**
-- В `activity_main.xml` создан вертикальный интерфейс с `ScrollView` и `TextView` для безопасного отображения длинных списков без обрезки.
-- Результаты обработки данных успешно привязаны к UI-компонентам через `findViewById`.
-- Приложение корректно компилируется и запускается на эмуляторе, все блоки вывода заполняются ожидаемыми данными.
+- В `activity_main.xml` полностью настроены ограничения всех виджетов относительно родительского контейнера и соседних элементов, исключены ошибки позиционирования.
+- В `MainActivity.kt` реализована инициализация компонентов и привязка логики кликов без конфликтов импортов и ошибок компиляции.
+- Приложение успешно компилируется и запускается на эмуляторе, все элементы интерфейса отображаются согласно заданию, кнопки реагируют на нажатия выводом `Toast`.
 
-**Итог:** Цель работы достигнута. Получены практические навыки работы с коллекциями в Kotlin, освоены методы функциональной обработки данных (`.filter`, `.map`, `.sortedBy`) и их интеграция в Android-приложение. Написанный код демонстрирует принципы декларативного, читаемого и эффективного программирования.
+**Итог:** Цель работы достигнута. Получены практические навыки создания пользовательского интерфейса в Android с использованием ConstraintLayout, работы с ресурсами проекта и обработки событий взаимодействия. Написанный код демонстрирует принципы модульной верстки, повторного использования стилей и корректной интеграции UI-компонентов с логикой приложения на Kotlin.
