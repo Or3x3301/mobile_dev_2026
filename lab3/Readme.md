@@ -1,4 +1,4 @@
-# Лабораторная работа №2
+# Лабораторная работа №3
 
 <div align="center">
 
@@ -18,8 +18,8 @@
 <br>
 <br>
 
-Лабораторная работа №2  
-**«Написание консольных утилит на Kotlin внутри Android проекта. Расчеты, работа со строками. Подготовка классов данных для будущего приложения»**  
+Лабораторная работа №3 
+**«Реализация списка объектов с фильтрацией с использованием .map, .filter, .sortedBy»**  
 01.03.02 Прикладная математика и информатика  
 3 Курс
 
@@ -55,138 +55,195 @@
 
 ## Цель Работы
 
-Научиться создавать классы данных и функции-утилиты на Kotlin в контексте Android-проекта, освоить базовые приёмы работы со строками и числами, познакомиться с юнит-тестированием для проверки корректности кода.
+Изучить функциональные методы обработки коллекций в Kotlin (filter, map, sortedBy) на примере списка объектов и вывести результаты в интерфейс Android-приложения.
+
+## Product
+```kotlin
+
+package com.example.lab3.models
+
+data class Product(
+    val name: String,
+    val category: String,
+    val price: Double,
+    val inStock: Boolean
+)
+
+```
+## MainActivity
+```kotlin
+package com.example.lab3
+
+import android.os.Bundle
+import android.widget.TextView
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.lab3.models.Movie
+import com.example.lab3.models.Product
+import com.example.lab3.ui.theme.Lab3Theme
+
+class MainActivity : ComponentActivity() {
+    private fun getProducts(): List<Product> {
+        return listOf(
+            Product("Ноутбук", "Электроника", 75000.0, true),
+            Product("Мышь", "Электроника", 1500.0, true),
+            Product("Книга 'Котлин'", "Книги", 1200.0, false),
+            Product("Флешка 64GB", "Электроника", 2000.0, true),
+            Product("Блокнот", "Канцелярия", 300.0, true),
+            Product("Ручка", "Канцелярия", 50.0, false),
+            Product("Монитор", "Электроника", 25000.0, true)
+        )
+    }
+
+    private fun getMovies(): List<Movie> {
+        return listOf(
+            Movie("Побег из Шоушенка", "Драма", 9.3, 1994),
+            Movie("Крёстный отец", "Драма", 9.2, 1972),
+            Movie("Тёмный рыцарь", "Боевик", 9.0, 2008),
+            Movie("Начало", "Фантастика", 8.8, 2010),
+            Movie("Интерстеллар", "Фантастика", 8.6, 2014),
+            Movie("Форрест Гамп", "Драма", 8.8, 1994),
+            Movie("Матрица", "Фантастика", 8.7, 1999),
+            Movie("Бойцовский клуб", "Драма", 8.8, 1999),
+            Movie("Джокер", "Драма", 8.4, 2019),
+            Movie("Мстители: Финал", "Боевик", 8.4, 2019),
+            Movie("Сияние", "Ужасы", 8.4, 1980),
+            Movie("Титаник", "Драма", 7.9, 1997)  // рейтинг < 8.0, не попадёт в фильтр
+        )
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val products = getProducts()
+
+        // Исходный список
+        val originalText = products.joinToString("\n") {
+            "${it.name} – ${it.price} руб. (${if (it.inStock) "в наличии" else "нет"})"
+        }
+        findViewById<TextView>(R.id.textOriginal).text = originalText
+
+        // Фильтр: только в наличии
+        val inStockProducts = products.filter { it.inStock }
+        val inStockText = inStockProducts.joinToString("\n") {
+            "${it.name} – ${it.price} руб."
+        }
+        findViewById<TextView>(R.id.textInStock).text = inStockText
+
+        //  Цепочка: Электроника + в наличии → сортировка по цене → форматирование
+        val electronicsSorted = products
+            .filter { it.category == "Электроника" && it.inStock }  // фильтрация
+            .sortedBy { it.price }                                   // сортировка по возрастанию
+            .map { "${it.name} – ${it.price} руб." }                 // преобразование в строку
+
+        findViewById<TextView>(R.id.textSorted).text = electronicsSorted.joinToString("\n")
+
+        // Товары дешевле 2000 руб, отсортированные по названию
+        val cheapProducts = products
+            .filter { it.price < 2000 && it.inStock }
+            .sortedBy { it.name }
+            .map { "${it.name}: ${it.price} руб." }
+
+        findViewById<TextView>(R.id.textCheap).text = cheapProducts.joinToString("\n")
+
+        val movies = getMovies()
+
+        val topMovies = movies
+            .filter { it.rating > 8.0 }                    // фильтрация по рейтингу
+            .sortedBy { it.year }                          // сортировка по году (старые → новые)
+            .map { "${it.title} (${it.year}) — ${it.rating}" } // форматирование
+
+        findViewById<TextView>(R.id.textMovies).text = topMovies.joinToString("\n")
+    }
+}
+
+@Composable
+fun Greeting(name: String, modifier: Modifier = Modifier) {
+    Text(
+        text = "Hello $name!",
+        modifier = modifier
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
+    Lab3Theme {
+        Greeting("Android")
+    }
+}
+
+```
 
 ## Индивидуальное задание: Класс "Студент"
-Создайте data class Student (имя, фамилия, группа, средний балл). Напишите функцию, которая возвращает строку вида "Иванов И. (группа ПИ-101)" и функцию для определения статуса (отличник/хорошист/троечник) на основе среднего балла. Покройте тестами.
+Список фильмов (название, жанр, рейтинг, год выпуска).
 
-<img width="912" height="220" alt="image" src="https://github.com/user-attachments/assets/a1686db9-1e4b-4956-9c33-d029dab1f2ba" />
-*Рисунок 1 – Успешное прохождение всех юнит-тестов*
+Показать фильмы с рейтингом выше 8.0.
+Отсортировать их по году выпуска.
+Вывести список названий и рейтингов.
 
-## Student
-```kotlin
+<img width="383" height="855" alt="image" src="https://github.com/user-attachments/assets/fda38056-93f3-44b5-b853-bdc809b024c5" />
 
-package com.example.myfirstapp
 
-data class Student(
-    val name: String,
-    val surname: String,
-    val group: String,
-    val averageGrade: Double
-){
-
-    fun getShortInfo(): String {
-        val initial = name.firstOrNull()?.uppercase() ?: ""
-        return "$surname $initial. (группа $group)"
-    }
-
-    fun getStatus(): String {
-        return when {
-            averageGrade >= 4.5 -> "Отличник"
-            averageGrade >= 3.5 -> "Хорошист"
-            averageGrade >= 3.0 -> "Троечник"
-            else -> "Не аттестован"
-        }
-    }
-}
-
-```
-## StudentTest
-```kotlin
-package com.example.myfirstapp
-import org.junit.Assert.assertEquals
-import org.junit.Test
-class StudentTest {
-
-    @Test
-    fun testGetShortInfo_correctFormat() {
-        // Arrange
-        val student = Student("Иван", "Иванов", "ПИ-101", 4.5)
-        val expected = "Иванов И. (группа ПИ-101)"
-
-        // Act
-        val result = student.getShortInfo()
-
-        // Assert
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun testGetShortInfo_differentName() {
-        val student = Student("Петр", "Петров", "ИК-202", 3.8)
-        assertEquals("Петров П. (группа ИК-202)", student.getShortInfo())
-    }
-
-    @Test
-    fun testStatusExcellent() {
-        val student = Student("Анна", "Смирнова", "ГР-101", 5.0)
-        assertEquals("Отличник", student.getStatus())
-    }
-
-    @Test
-    fun testStatusGood() {
-        val student = Student("Олег", "Козлов", "ГР-101", 4.0)
-        assertEquals("Хорошист", student.getStatus())
-    }
-
-    @Test
-    fun testStatusAverage() {
-        val student = Student("Дмитрий", "Волков", "ГР-101", 3.2)
-        assertEquals("Троечник", student.getStatus())
-    }
-
-    @Test
-    fun testStatusLowGrade() {
-        val student = Student("Ева", "Лугина", "ГР-101", 2.5)
-        assertEquals("Не аттестован", student.getStatus())
-    }
-}
-
-```
 ## Ответы на контрольные вопросы
+**Что возвращает filter?**
 
-**1. Для чего в Kotlin используются data class?**  
-Классы данных (data class) предназначены для хранения состояния объектов. Их преимущество в том, что компилятор автоматически создаёт стандартные методы: `toString()`, `equals()`, `hashCode()` и `copy()`. Это позволяет избежать написания шаблонного кода. Такие классы идеально подходят для моделей, например, `Book`, содержащей поля: название, автор, год и цена.
+- Новый список, исходный не изменяется (принцип неизменяемости).
 
-**2. Чем отличается функция расширения от обычной функции?**  
-Функция расширения даёт возможность добавлять новый метод к существующему классу без использования наследования. Вызывается она как метод объекта (например, `"string".isValidEmail()`), однако не имеет доступа к приватным成员ам класса. Обычная функция является независимой и вызывается напрямую по имени (например, `formatAuthorName(...)`).
+**Разница sortedBy и sortedByDescending?**
 
-**3. Как запустить юнит-тесты в Android Studio?**  
-Запустить тесты можно тремя способами:
-- Через контекстное меню: ПКМ по папке `src/test/java` → **Run Tests**.
-- Через интерфейс редактора: нажать на зелёный значок запуска рядом с классом или методом теста.
-- Через терминал командой: `./gradlew test`.
-Отчёт о выполнении отображается в нижней панели **Run**.
+- Первый сортирует по возрастанию, второй — по убыванию.
 
-**4. Что такое assertEquals и для чего нужен третий параметр (дельта) при сравнении вещественных чисел?**  
-`assertEquals` — это утверждение из библиотеки JUnit, проверяющее совпадение двух значений. При работе с вещественными числами (Float, Double) используется третий аргумент — дельта. Она необходима из-за погрешностей вычислений с плавающей точкой (например, `0.1 + 0.2` не всегда равно `0.3`). Дельта определяет допустимую разницу, при которой числа считаются равными.
+**Как объединить условия в filter?**
 
-**5. В какой директории проекта хранятся тесты, выполняющиеся на JVM?**  
-Локальные тесты, выполняющиеся на виртуальной машине Java (JVM), находятся в директории `app/src/test/java/`. Они запускаются на компьютере разработчика и не требуют подключения эмулятора или физического устройства.
+- Через && (И) или || (ИЛИ):
+- filter { it.price > 100 && it.inStock }
+
+**Для чего map? Пример:**
+
+- Преобразует элементы коллекции:
+- products.map { it.name } → список только с названиями.
+
+**Что такое joinToString?**
+
+- Функция, которая объединяет элементы коллекции в одну строку с разделителем:
+- listOf("A", "B").joinToString(" | ") → "A | B"
 
 ## Вывод
 
-В результате выполнения лабораторной работы был разработан набор утилит для обработки строк и чисел в рамках Android-приложения.
+В результате выполнения лабораторной работы было разработано Android-приложение для демонстрации функциональной обработки списков объектов с использованием встроенных методов Kotlin.
 
 **Изученные и применённые технологии:**
-- **Data class:** реализована модель `Book` для хранения данных о книге.
-- **Функции расширения:** добавлен метод `isValidEmail()` для класса String.
-- **Работа со строками:** выполнено форматирование ФИО автора (Фамилия И.О.).
-- **Вычисления:** написаны функции для расчёта скидки и конвертации валют.
-- **Валидация:** использовано исключение `require` для проверки входных данных.
+- **Data class:** реализована модель `Movie` для хранения данных о фильме (название, жанр, рейтинг, год выпуска).
+- **Функциональные методы коллекций:** применены `.filter`, `.sortedBy` и `.map` для выборки, сортировки и преобразования данных.
+- **Цепочки вызовов (Chaining):** настроена последовательная обработка данных без создания лишних промежуточных переменных.
+- **Лямбда-выражения:** использованы анонимные функции для передачи условий фильтрации и правил сортировки (в т.ч. с неявным параметром `it`).
+- **Форматирование вывода:** применён метод `.joinToString()` для преобразования коллекции строк в единый текстовый блок с переносами.
 
-**Юнит-тестирование:**
-- Созданы классы тестов `StringUtilsTest` и `CurrencyConverterTest`.
-- Написано 20 тестов, охватывающих стандартные, граничные случаи и обработку ошибок.
-- Все тесты пройдены успешно (статус «зелёный»), что гарантирует работоспособность кода.
+**Обработка коллекций и логика:**
+- Реализована фильтрация списка по условию `rating > 8.0`, корректно исключающая фильмы с низким рейтингом.
+- Выполнена сортировка отфильтрованной выборки по году выпуска в порядке возрастания.
+- Осуществлено преобразование объектов `Movie` в человекочитаемые строки с указанием названия и рейтинга.
+- Продемонстрирован принцип иммутабельности: исходный список не изменяется, каждая операция возвращает новую коллекцию.
 
-**Индивидуальное задание («Конвертер валют»):**
-- Разработан класс `CurrencyConverter` с 6 методами конвертации (прямые курсы и кросс-курсы RUB/USD/EUR).
-- Реализована защита от отрицательных значений через `require`.
-- Написано 12 тестов для проверки логики конвертера.
+**Индивидуальное задание («Список фильмов»):**
+- Создан тестовый набор данных из 12 фильмов различных жанров и годов выпуска.
+- Настроена цепочка обработки: `filter { it.rating > 8.0 } → sortedBy { it.year } → map { ... }`.
+- Реализован вывод отфильтрованных и отсортированных данных в интерфейс приложения.
+- Проверена корректность работы при модификации условий (например, добавление фильтра по жанру или использование `sortedByDescending`).
 
 **Интерфейс и запуск:**
-- В UI приложения выведены результаты: информация о книге с учётом скидки и пример конвертации 1000 рублей.
-- Приложение корректно запускается на эмуляторе и отображает данные.
+- В `activity_main.xml` создан вертикальный интерфейс с `ScrollView` и `TextView` для безопасного отображения длинных списков без обрезки.
+- Результаты обработки данных успешно привязаны к UI-компонентам через `findViewById`.
+- Приложение корректно компилируется и запускается на эмуляторе, все блоки вывода заполняются ожидаемыми данными.
 
-**Итог:** Цель работы достигнута. Получены практические навыки разработки на Kotlin для Android, включая создание классов данных, утилитных функций и покрытие кода юнит-тестами.
+**Итог:** Цель работы достигнута. Получены практические навыки работы с коллекциями в Kotlin, освоены методы функциональной обработки данных (`.filter`, `.map`, `.sortedBy`) и их интеграция в Android-приложение. Написанный код демонстрирует принципы декларативного, читаемого и эффективного программирования.
